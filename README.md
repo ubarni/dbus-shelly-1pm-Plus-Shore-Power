@@ -1,4 +1,4 @@
-# dbus-shelly-1pm-pvinverter multi instanz
+# dbus-shelly-1pm-pvinverter multi-instance
 Integrate Shelly 1PM into Victron Energies Venus OS
 
 ## Purpose
@@ -38,7 +38,7 @@ Thats it 😄
 Just grap a copy of the main branche and copy them to a folder under `/data/` e.g. `/data/dbus-shelly-1pm-pvinverter`.
 After that call the install.sh script.
 
-Instance1 The following script should do everything for  you:
+instance1 The following script should do everything for  you:
 ```
 wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
 unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
@@ -49,7 +49,7 @@ rm main.zip
 ```
 
 
-Instance2 The following script should do everything for you:
+instance2 The following script should do everything for you:
 ```
 wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
 unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
@@ -61,7 +61,7 @@ rm main.zip
 
 
 
-Instance3 The following script should do everything for you:
+instance3 The following script should do everything for you:
 ```
 wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
 unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
