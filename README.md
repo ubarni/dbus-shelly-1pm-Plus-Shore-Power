@@ -1,4 +1,4 @@
-# dbus-shelly-1pm-pvinverter
+# dbus-shelly-1pm-pvinverter multi instanz
 Integrate Shelly 1PM into Victron Energies Venus OS
 
 ## Purpose
@@ -12,22 +12,6 @@ This project is my first on GitHub and with the Victron Venus OS, so I took some
 - https://github.com/fabian-lauer/dbus-shelly-3em-smartmeter
 - https://shelly-api-docs.shelly.cloud/gen1/#shelly1-shelly1pm
 - https://github.com/victronenergy/venus/wiki/dbus#pv-inverters
-
-## How it works
-### My setup
-- 3-Phase installation
-- Shelly 1PM with latest firmware (20220209-094317/v1.11.8-g8c7bb8d)
-  - Measuring AC output of SUN-2000 GTIL on phase L3
-  - Connected to Wifi netowrk "A" with a known IP  
-- Shelly 1PM with latest firmware (20220209-094317/v1.11.8-g8c7bb8d)
-  - Measuring AC output of Envertech EVT-500 and Hoymiles HM-800 on phase L3
-  - Connected to Wifi netowrk "A" with a known IP  
-- Shelly 3EM used as a grid meter
-  - Connected over https://github.com/fabian-lauer/dbus-shelly-3em-smartmeter
-  - Connected to Wifi netowrk "A" with a known IP  
-- Venus OS on Raspberry PI 4 4GB version 1.1 - Firmware v2.84
-  - No other devices from Victron connected
-  - Connected to Wifi netowrk "A"
 
 ### Details / Process
 As mentioned above the script is inspired by @fabian-lauer dbus-shelly-3em-smartmeter implementation.
