@@ -56,17 +56,40 @@ After that call the install.sh script.
 
 The following script should do everything for you:
 ```
-wget https://github.com/vikt0rm/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
+wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
 unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
-mv /data/dbus-shelly-1pm-pvinverter-main /data/dbus-shelly-1pm-pvinverter
-chmod a+x /data/dbus-shelly-1pm-pvinverter/install.sh
-/data/dbus-shelly-1pm-pvinverter/install.sh
+mv /data/dbus-shelly-1pm-pvinverter-main /data/dbus-shelly-1pm-pvinverter01
+chmod a+x /data/dbus-shelly-1pm-pvinverter01/install.sh
+/data/dbus-shelly-1pm-pvinverter01/install.sh
+rm main.zip
+```
+
+
+The following script should do everything for you:
+```
+wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
+unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
+mv /data/dbus-shelly-1pm-pvinverter-main /data/dbus-shelly-1pm-pvinverter02
+chmod a+x /data/dbus-shelly-1pm-pvinverter02/install.sh
+/data/dbus-shelly-1pm-pvinverter02/install.sh
+rm main.zip
+```
+
+
+
+The following script should do everything for you:
+```
+wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/main.zip
+unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
+mv /data/dbus-shelly-1pm-pvinverter-main /data/dbus-shelly-1pm-pvinverter03
+chmod a+x /data/dbus-shelly-1pm-pvinverter03/install.sh
+/data/dbus-shelly-1pm-pvinverter01/install.sh
 rm main.zip
 ```
 ⚠️ Check configuration after that - because service is already installed an running and with wrong connection data (host, username, pwd) you will spam the log-file
 
 ### Change config.ini
-Within the project there is a file `/data/dbus-shelly-1pm-pvinverter/config.ini` - just change the values - most important is the deviceinstance, custom name and phase under "DEFAULT" and host, username and password in section "ONPREMISE". More details below:
+Within the project there is a file `/data/dbus-shelly-1pm-pvinverter01/config.ini` or `/data/dbus-shelly-1pm-pvinverter02/config.ini` or `/data/dbus-shelly-1pm-pvinverter03/config.ini` - just change the values - most important is the deviceinstance, custom name and phase under "DEFAULT" and host, username and password in section "ONPREMISE". More details below:
 
 | Section  | Config vlaue | Explanation |
 | ------------- | ------------- | ------------- |
