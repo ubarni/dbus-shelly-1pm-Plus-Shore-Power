@@ -67,7 +67,7 @@ wget https://github.com/Halmand/dbus-shelly-1pm-pvinverter/archive/refs/heads/ma
 unzip main.zip "dbus-shelly-1pm-pvinverter-main/*" -d /data
 mv /data/dbus-shelly-1pm-pvinverter-main /data/dbus-shelly-1pm-pvinverter03
 chmod a+x /data/dbus-shelly-1pm-pvinverter03/install.sh
-/data/dbus-shelly-1pm-pvinverter01/install.sh
+/data/dbus-shelly-1pm-pvinverter03/install.sh
 rm main.zip
 ```
 ⚠️ Check configuration after that - because service is already installed an running and with wrong connection data (host, username, pwd) you will spam the log-file
