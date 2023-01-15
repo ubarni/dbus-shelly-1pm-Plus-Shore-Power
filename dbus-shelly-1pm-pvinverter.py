@@ -25,7 +25,8 @@ class DbusShelly1pmService:
     config = self._getConfig()
     deviceinstance = int(config['DEFAULT']['Deviceinstance'])
     customname = config['DEFAULT']['CustomName']
-    
+    plusPmSupport = config['DEFAULT']['PlusPmSupport']
+
     self._dbusservice = VeDbusService("{}.http_{:02d}".format(servicename, deviceinstance))
     self._paths = paths
     
@@ -95,8 +96,11 @@ class DbusShelly1pmService:
   def _getShellyStatusUrl(self):
     config = self._getConfig()
     accessType = config['DEFAULT']['AccessType']
-    
-    if accessType == 'OnPremise': 
+
+    if accessType == 'OnPremise' and plusPmSupport == 'True':
+        URL = "http://%s:%s@%s/rpc/Shelly.GetStatus" % (config['ONPREMISE']['Username'], config['ONPREMISE']['Password'], config['ONPREMISE']['Host'])
+        URL = URL.replace(":@", "")
+    elif accessType == 'OnPremise':
         URL = "http://%s:%s@%s/status" % (config['ONPREMISE']['Username'], config['ONPREMISE']['Password'], config['ONPREMISE']['Host'])
         URL = URL.replace(":@", "")
     else:
@@ -111,7 +115,7 @@ class DbusShelly1pmService:
     
     # check for response
     if not meter_r:
-        raise ConnectionError("No response from Shelly 1PM - %s" % (URL))
+        raise ConnectionError("No response from ShellyPlus 1PM - %s" % (URL))
     
     meter_data = meter_r.json()     
     
@@ -139,22 +143,36 @@ class DbusShelly1pmService:
        str(config['DEFAULT']['Phase'])
     
        pvinverter_phase = str(config['DEFAULT']['Phase'])
-       
+       plusPmSupport = str(config['DEFAULT']['PlusPmSupport'])
+
        #send data to DBus
        for phase in ['L1', 'L2', 'L3']:
          pre = '/Ac/' + phase
-         
-         if phase == pvinverter_phase:
-           power = meter_data['meters'][0]['power']
-           total = meter_data['meters'][0]['total']
-           voltage = 230
-           current = power / voltage
+
+         if phase == pvinverter_phase and plusPmSupport == 'True':
+             power = meter_data['switch:0'][0]['apower']
+             total = meter_data['switch:0'][0]['aenergy']['total']
+             voltage = meter_data['switch:0'][0]['voltage']
+             current = power / voltage
+
+             self._dbusservice[pre + '/Voltage'] = voltage
+             self._dbusservice[pre + '/Current'] = current
+             self._dbusservice[pre + '/Power'] = power
+             if power > 0:
+                 self._dbusservice[pre + '/Energy/Forward'] = total/1000/60
+
+         elif phase == pvinverter_phase:
+
+             power = meter_data['meters'][0]['power']
+             total = meter_data['meters'][0]['total']
+             voltage = 230
+             current = power / voltage
            
-           self._dbusservice[pre + '/Voltage'] = voltage
-           self._dbusservice[pre + '/Current'] = current
-           self._dbusservice[pre + '/Power'] = power
-           if power > 0:
-             self._dbusservice[pre + '/Energy/Forward'] = total/1000/60 
+             self._dbusservice[pre + '/Voltage'] = voltage
+             self._dbusservice[pre + '/Current'] = current
+             self._dbusservice[pre + '/Power'] = power
+             if power > 0:
+                 self._dbusservice[pre + '/Energy/Forward'] = total/1000/60
            
          else:
            self._dbusservice[pre + '/Voltage'] = 0
