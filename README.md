@@ -1,5 +1,5 @@
-# dbus-shelly-1pm-pvinverter multi-instance
-Integrate Shelly 1PM into Victron Energies Venus OS
+# dbus-shelly-1pm-pvinverter and shelly pm 1 plus multi-instance
+Integrate Shelly 1PM and shelly pm 1 plus into Victron Energies Venus OS
 
 https://youtu.be/ki9uB-DL8lA
 
