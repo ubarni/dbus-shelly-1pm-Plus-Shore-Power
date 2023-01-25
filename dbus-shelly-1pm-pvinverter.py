@@ -14,6 +14,7 @@ import sys
 import time
 import requests # for http GET
 import configparser # for config/ini file
+from requests.auth import HTTPDigestAuth
  
 # our own packages from victron
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), '/opt/victronenergy/dbus-systemcalc-py/ext/velib_python'))
@@ -21,11 +22,12 @@ from vedbus import VeDbusService
 
 
 class DbusShelly1pmService:
-  def __init__(self, servicename, paths, productname='Shelly 1PM', connection='Shelly 1PM HTTP JSON service'):
+  def __init__(self, servicename, paths, productname='Shelly(Plus) 1PM', connection='Shelly(Plus) 1PM HTTP JSON service'):
     config = self._getConfig()
     deviceinstance = int(config['DEFAULT']['Deviceinstance'])
     customname = config['DEFAULT']['CustomName']
-    
+    plusPmSupport = config['DEFAULT']['PlusPmSupport']
+
     self._dbusservice = VeDbusService("{}.http_{:02d}".format(servicename, deviceinstance))
     self._paths = paths
     
@@ -67,12 +69,19 @@ class DbusShelly1pmService:
     gobject.timeout_add(self._getSignOfLifeInterval()*60*1000, self._signOfLife)
  
   def _getShellySerial(self):
+    config = self._getConfig()                                                                                                          
+    accessType = config['DEFAULT']['AccessType']                                                                                        
+    plusPmSupport = config['DEFAULT']['PlusPmSupport']  
     meter_data = self._getShellyData()  
     
-    if not meter_data['mac']:
+#    if not meter_data['mac'] and not meter_data['sys']['mac']:
+    if not meter_data['sys']['mac']:
         raise ValueError("Response does not contain 'mac' attribute")
     
-    serial = meter_data['mac']
+    if plusPmSupport == 'True':
+        serial = meter_data['sys']['mac']
+    else:
+        serial = meter_data['mac']
     return serial
  
  
@@ -95,8 +104,12 @@ class DbusShelly1pmService:
   def _getShellyStatusUrl(self):
     config = self._getConfig()
     accessType = config['DEFAULT']['AccessType']
-    
-    if accessType == 'OnPremise': 
+    plusPmSupport = config['DEFAULT']['PlusPmSupport']
+
+    if accessType == 'OnPremise' and plusPmSupport == 'True':
+        URL = "http://%s/rpc/Shelly.GetStatus" % (config['ONPREMISE']['Host'])
+        URL = URL.replace(":@", "")
+    elif accessType == 'OnPremise':
         URL = "http://%s:%s@%s/status" % (config['ONPREMISE']['Username'], config['ONPREMISE']['Password'], config['ONPREMISE']['Host'])
         URL = URL.replace(":@", "")
     else:
@@ -106,12 +119,18 @@ class DbusShelly1pmService:
     
  
   def _getShellyData(self):
+    config = self._getConfig()                                                                                                                        
+    plusPmSupport = config['DEFAULT']['PlusPmSupport']
+
     URL = self._getShellyStatusUrl()
-    meter_r = requests.get(url = URL)
+    if plusPmSupport == 'True' and config['ONPREMISE']['Username'] != '' and config['ONPREMISE']['Password'] != '':
+        meter_r = requests.get(url = URL, auth=HTTPDigestAuth(config['ONPREMISE']['Username'], config['ONPREMISE']['Password']))
+    else:
+        meter_r = requests.get(url = URL)
     
     # check for response
     if not meter_r:
-        raise ConnectionError("No response from Shelly 1PM - %s" % (URL))
+        raise ConnectionError("No response from Shelly(Plus) 1PM - %s" % (URL))
     
     meter_data = meter_r.json()     
     
@@ -139,22 +158,36 @@ class DbusShelly1pmService:
        str(config['DEFAULT']['Phase'])
     
        pvinverter_phase = str(config['DEFAULT']['Phase'])
-       
+       plusPmSupport = str(config['DEFAULT']['PlusPmSupport'])
+
        #send data to DBus
        for phase in ['L1', 'L2', 'L3']:
          pre = '/Ac/' + phase
-         
-         if phase == pvinverter_phase:
-           power = meter_data['meters'][0]['power']
-           total = meter_data['meters'][0]['total']
-           voltage = 230
-           current = power / voltage
+
+         if phase == pvinverter_phase and plusPmSupport == 'True':
+             power = meter_data['switch:0']['apower']
+             total = meter_data['switch:0']['aenergy']['total']
+             voltage = meter_data['switch:0']['voltage']
+             current = power / voltage
+
+             self._dbusservice[pre + '/Voltage'] = voltage
+             self._dbusservice[pre + '/Current'] = current
+             self._dbusservice[pre + '/Power'] = power
+             if power > 0:
+                 self._dbusservice[pre + '/Energy/Forward'] = total/1000/60
+
+         elif phase == pvinverter_phase:
+
+             power = meter_data['meters'][0]['power']
+             total = meter_data['meters'][0]['total']
+             voltage = 230
+             current = power / voltage
            
-           self._dbusservice[pre + '/Voltage'] = voltage
-           self._dbusservice[pre + '/Current'] = current
-           self._dbusservice[pre + '/Power'] = power
-           if power > 0:
-             self._dbusservice[pre + '/Energy/Forward'] = total/1000/60 
+             self._dbusservice[pre + '/Voltage'] = voltage
+             self._dbusservice[pre + '/Current'] = current
+             self._dbusservice[pre + '/Power'] = power
+             if power > 0:
+                 self._dbusservice[pre + '/Energy/Forward'] = total/1000/60
            
          else:
            self._dbusservice[pre + '/Voltage'] = 0
