@@ -94,14 +94,20 @@ Within the project there is a file `/data/dbus-shelly-1pm-pvinverter01/config.in
 ## Uninstall:
 
 instace 1 
-```/data/dbus-shelly-1pm-pvinverter01/uninstall.sh
+```
+/data/dbus-shelly-1pm-pvinverter01/uninstall.sh
 rm -r /data/dbus-shelly-1pm-pvinverter01```
+```
 instace 2
-```/data/dbus-shelly-1pm-pvinverter02/uninstall.sh
-rm -r /data/dbus-shelly-1pm-pvinverter02```
+```
+/data/dbus-shelly-1pm-pvinverter02/uninstall.sh
+rm -r /data/dbus-shelly-1pm-pvinverter02
+```
 instace 3
-```/data/dbus-shelly-1pm-pvinverter03/uninstall.sh
-rm -r /data/dbus-shelly-1pm-pvinverter03```
+```
+/data/dbus-shelly-1pm-pvinverter03/uninstall.sh
+rm -r /data/dbus-shelly-1pm-pvinverter03
+```
 
 
 ## Used documentation
