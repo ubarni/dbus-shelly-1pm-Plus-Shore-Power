@@ -79,6 +79,9 @@ rm main.zip
 ### Change config.ini
 Within the project there is a file `/data/dbus-shelly-1pm-pvinverter01/config.ini` or `/data/dbus-shelly-1pm-pvinverter02/config.ini` or `/data/dbus-shelly-1pm-pvinverter03/config.ini` - just change the values - most important is the deviceinstance, custom name and phase under "DEFAULT" and host, username and password in section "ONPREMISE". More details below:
 
+
+Uninstall: `/data/dbus-shelly-1pm-pvinverter01/uninstall.sh` `/data/dbus-shelly-1pm-pvinverter02/uninstall.sh` `/data/dbus-shelly-1pm-pvinverter03/uninstall.sh`
+
 | Section  | Config vlaue | Explanation |
 | ------------- | ------------- | ------------- |
 | DEFAULT  | AccessType | Fixed value 'OnPremise' |
