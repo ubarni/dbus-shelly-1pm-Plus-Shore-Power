@@ -96,7 +96,7 @@ Within the project there is a file `/data/dbus-shelly-1pm-pvinverter01/config.in
 instace 1 
 ```
 /data/dbus-shelly-1pm-pvinverter01/uninstall.sh
-rm -r /data/dbus-shelly-1pm-pvinverter01```
+rm -r /data/dbus-shelly-1pm-pvinverter01
 ```
 instace 2
 ```
