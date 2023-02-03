@@ -175,7 +175,7 @@ class DbusShelly1pmService:
              self._dbusservice[pre + '/Current'] = current
              self._dbusservice[pre + '/Power'] = power
              if power > 0:
-                 self._dbusservice[pre + '/Energy/Forward'] = total/1000/60
+                 self._dbusservice[pre + '/Energy/Forward'] = total/1000
 
          elif phase == pvinverter_phase:
 
