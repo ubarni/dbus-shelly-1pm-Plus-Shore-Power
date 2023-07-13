@@ -20,13 +20,11 @@ from requests.auth import HTTPDigestAuth
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), '/opt/victronenergy/dbus-systemcalc-py/ext/velib_python'))
 from vedbus import VeDbusService
 
-
 class DbusShelly1pmService:
   def __init__(self, servicename, paths, productname='Shelly(Plus) 1PM', connection='Shelly(Plus) 1PM HTTP JSON service'):
     config = self._getConfig()
     deviceinstance = int(config['DEFAULT']['Deviceinstance'])
     customname = config['DEFAULT']['CustomName']
-    plusPmSupport = config['DEFAULT']['PlusPmSupport']
 
     self._dbusservice = VeDbusService("{}.http_{:02d}".format(servicename, deviceinstance))
     self._paths = paths
@@ -40,7 +38,6 @@ class DbusShelly1pmService:
     
     # Create the mandatory objects
     self._dbusservice.add_path('/DeviceInstance', deviceinstance)
-    #self._dbusservice.add_path('/ProductId', 16) # value used in ac_sensor_bridge.cpp of dbus-cgwacs
     self._dbusservice.add_path('/ProductId', 0xFFFF) # id assigned by Victron Support from SDM630v2.py
     self._dbusservice.add_path('/ProductName', productname)
     self._dbusservice.add_path('/CustomName', customname)    
@@ -70,60 +67,41 @@ class DbusShelly1pmService:
  
   def _getShellySerial(self):
     config = self._getConfig()                                                                                                          
-    accessType = config['DEFAULT']['AccessType']                                                                                        
-    plusPmSupport = config['DEFAULT']['PlusPmSupport']  
     meter_data = self._getShellyData()  
     
-#    if not meter_data['mac'] and not meter_data['sys']['mac']:
     if not meter_data['sys']['mac']:
-        raise ValueError("Response does not contain 'mac' attribute")
+        raise ValueError("Response does not contain 'sys' 'mac' attribute")
     
-    if plusPmSupport == 'True':
-        serial = meter_data['sys']['mac']
-    else:
-        serial = meter_data['mac']
-    return serial
- 
- 
+    serial = meter_data['sys']['mac']
+
   def _getConfig(self):
     config = configparser.ConfigParser()
     config.read("%s/config.ini" % (os.path.dirname(os.path.realpath(__file__))))
     return config;
- 
  
   def _getSignOfLifeInterval(self):
     config = self._getConfig()
     value = config['DEFAULT']['SignOfLifeLog']
     
     if not value: 
-        value = 0
-    
+        value = 0   
     return int(value)
-  
-  
+    
   def _getShellyStatusUrl(self):
     config = self._getConfig()
-    accessType = config['DEFAULT']['AccessType']
-    plusPmSupport = config['DEFAULT']['PlusPmSupport']
 
-    if accessType == 'OnPremise' and plusPmSupport == 'True':
-        URL = "http://%s/rpc/Shelly.GetStatus" % (config['ONPREMISE']['Host'])
-        URL = URL.replace(":@", "")
-    elif accessType == 'OnPremise':
-        URL = "http://%s:%s@%s/status" % (config['ONPREMISE']['Username'], config['ONPREMISE']['Password'], config['ONPREMISE']['Host'])
-        URL = URL.replace(":@", "")
+    URL = "http://%s/rpc/Shelly.GetStatus" % (config['ONPREMISE']['Host'])
+    URL = URL.replace(":@", "")
     else:
         raise ValueError("AccessType %s is not supported" % (config['DEFAULT']['AccessType']))
     
-    return URL
-    
+    return URL 
  
   def _getShellyData(self):
     config = self._getConfig()                                                                                                                        
-    plusPmSupport = config['DEFAULT']['PlusPmSupport']
 
     URL = self._getShellyStatusUrl()
-    if plusPmSupport == 'True' and config['ONPREMISE']['Username'] != '' and config['ONPREMISE']['Password'] != '':
+    if config['ONPREMISE']['Username'] != '' and config['ONPREMISE']['Password'] != '':
         meter_r = requests.get(url = URL, auth=HTTPDigestAuth(config['ONPREMISE']['Username'], config['ONPREMISE']['Password']))
     else:
         meter_r = requests.get(url = URL)
@@ -137,10 +115,8 @@ class DbusShelly1pmService:
     # check for Json
     if not meter_data:
         raise ValueError("Converting response to JSON failed")
-    
-    
+        
     return meter_data
- 
  
   def _signOfLife(self):
     logging.info("--- Start: sign of life ---")
@@ -155,48 +131,26 @@ class DbusShelly1pmService:
        meter_data = self._getShellyData()
        
        config = self._getConfig()
-       str(config['DEFAULT']['Phase'])
-    
-       pvinverter_phase = str(config['DEFAULT']['Phase'])
-       plusPmSupport = str(config['DEFAULT']['PlusPmSupport'])
 
        #send data to DBus
-       for phase in ['L1', 'L2', 'L3']:
-         pre = '/Ac/' + phase
-
-         if phase == pvinverter_phase and plusPmSupport == 'True':
-             power = meter_data['switch:0']['apower']
-             total = meter_data['switch:0']['aenergy']['total']
-             voltage = meter_data['switch:0']['voltage']
-             current = power / voltage
-
-             self._dbusservice[pre + '/Voltage'] = voltage
-             self._dbusservice[pre + '/Current'] = current
-             self._dbusservice[pre + '/Power'] = power
-             if power > 0:
-                 self._dbusservice[pre + '/Energy/Forward'] = total/1000
-
-         elif phase == pvinverter_phase:
-
-             power = meter_data['meters'][0]['power']
-             total = meter_data['meters'][0]['total']
-             voltage = 230
-             current = power / voltage
-           
-             self._dbusservice[pre + '/Voltage'] = voltage
-             self._dbusservice[pre + '/Current'] = current
-             self._dbusservice[pre + '/Power'] = power
-             if power > 0:
-                 self._dbusservice[pre + '/Energy/Forward'] = total/1000/60
-           
-         else:
-           self._dbusservice[pre + '/Voltage'] = 0
-           self._dbusservice[pre + '/Current'] = 0
-           self._dbusservice[pre + '/Power'] = 0
-           self._dbusservice[pre + '/Energy/Forward'] = 0
-           
-       self._dbusservice['/Ac/Power'] = self._dbusservice['/Ac/' + pvinverter_phase + '/Power']
-       self._dbusservice['/Ac/Energy/Forward'] = self._dbusservice['/Ac/' + pvinverter_phase + '/Energy/Forward']
+       power = meter_data['switch:0']['apower']
+       total = meter_data['switch:0']['aenergy']['total']
+       voltage = meter_data['switch:0']['voltage']
+       current = power / voltage
+	   
+       self._dbusservice['/Ac/L1/Voltage'] = voltage
+       self._dbusservice['/Ac/L1/Current'] = current
+       self._dbusservice['/Ac/L1/Power'] = power
+       if power > 0:
+           self._dbusservice['/Ac/L1/Energy/Forward'] = total/1000
+       else:
+         self._dbusservice['/Ac/L1/Voltage'] = 0
+         self._dbusservice['/Ac/L1/Current'] = 0
+         self._dbusservice['/Ac/L1/Power'] = 0
+         self._dbusservice['/Ac/L1/Energy/Forward'] = 0
+         
+       self._dbusservice['/Ac/Power'] = self._dbusservice['/Ac/L1/Power']
+       self._dbusservice['/Ac/Energy/Forward'] = self._dbusservice['/Ac/L1/Energy/Forward']
        
        #logging
        logging.debug("House Consumption (/Ac/Power): %s" % (self._dbusservice['/Ac/Power']))
@@ -221,7 +175,6 @@ class DbusShelly1pmService:
     logging.debug("someone else updated %s to %s" % (path, value))
     return True # accept the change
  
-
 
 def getLogLevel():
   config = configparser.ConfigParser()
@@ -271,17 +224,9 @@ def main():
           '/Ac/Voltage': {'initial': 0, 'textformat': _v},
           
           '/Ac/L1/Voltage': {'initial': 0, 'textformat': _v},
-          '/Ac/L2/Voltage': {'initial': 0, 'textformat': _v},
-          '/Ac/L3/Voltage': {'initial': 0, 'textformat': _v},
           '/Ac/L1/Current': {'initial': 0, 'textformat': _a},
-          '/Ac/L2/Current': {'initial': 0, 'textformat': _a},
-          '/Ac/L3/Current': {'initial': 0, 'textformat': _a},
           '/Ac/L1/Power': {'initial': 0, 'textformat': _w},
-          '/Ac/L2/Power': {'initial': 0, 'textformat': _w},
-          '/Ac/L3/Power': {'initial': 0, 'textformat': _w},
           '/Ac/L1/Energy/Forward': {'initial': None, 'textformat': _kwh},
-          '/Ac/L2/Energy/Forward': {'initial': None, 'textformat': _kwh},
-          '/Ac/L3/Energy/Forward': {'initial': None, 'textformat': _kwh},
         })
      
       logging.info('Connected to dbus, and switching over to gobject.MainLoop() (= event based)')
