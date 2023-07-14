@@ -44,6 +44,7 @@ class DbusShelly1pmService:
     self._dbusservice.add_path('/Serial', self._getShellySerial())
     self._dbusservice.add_path('/HardwareVersion', 0)
     self._dbusservice.add_path('/FirmwareVersion', 0.1)
+		self._dbusservice.add_path('/UpdateIndex', 0)
         
     # add path values to dbus
     for path, settings in self._paths.items():
@@ -126,15 +127,20 @@ class DbusShelly1pmService:
  
   def _update(self):   
     try:
-       #get data from Shelly 1pm
-       meter_data = self._getShellyData()       
-       config = self._getConfig()
-
+      #get data from Shelly Plus 1pm
+      try:
+        meter_data = self._getShellyData()
+      except:
+	      meter_data = None
+	       
        #send data to DBus
-       power = meter_data['switch:0']['apower']
-       total = meter_data['switch:0']['aenergy']['total']
-       voltage = meter_data['switch:0']['voltage']
-       current = power / voltage
+       if meter_data = None:
+	        power = 0
+       else:
+          power = meter_data['switch:0']['apower']
+          total = meter_data['switch:0']['aenergy']['total']
+          voltage = meter_data['switch:0']['voltage']
+          current = power / voltage
 	   
        if power > 0:
            self._dbusservice['/Ac/Energy/Forward'] = total/1000
@@ -149,13 +155,12 @@ class DbusShelly1pmService:
          self._dbusservice['/Ac/L1/Energy/Forward'] = 0
          self._dbusservice['/Ac/L1/Power'] = 0
          self._dbusservice['/Ac/L1/Voltage'] = 0
-         
            
        # increment UpdateIndex - to show that new data is available
-#       index = self._dbusservice['/UpdateIndex'] + 1  # increment index
-#       if index > 255:   # maximum value of the index
-#         index = 0       # overflow from 255 to 0
-#       self._dbusservice['/UpdateIndex'] = index
+       index = self._dbusservice['/UpdateIndex'] + 1  # increment index
+		   if index > 255:   # maximum value of the index
+          index = 0       # overflow from 255 to 0
+       self._dbusservice['/UpdateIndex'] = index
 
        #update lastupdate vars
        self._lastUpdate = time.time()              
