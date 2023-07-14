@@ -18,31 +18,17 @@ import configparser  # for config/ini file
 from requests.auth import HTTPDigestAuth
 
 # our own packages from victron
-sys.path.insert(
-    1,
-    os.path.join(
-        os.path.dirname(__file__),
-        "/opt/victronenergy/dbus-systemcalc-py/ext/velib_python",
-    ),
-)
+sys.path.insert(1, os.path.join(os.path.dirname(__file__),"/opt/victronenergy/dbus-systemcalc-py/ext/velib_python",),)
 from vedbus import VeDbusService
 
 
 class DbusShelly1pmService:
-    def __init__(
-        self,
-        servicename,
-        paths,
-        productname="Shelly(Plus) 1PM",
-        connection="Shelly(Plus) 1PM HTTP JSON service",
-    ):
+    def __init__(self,servicename,paths,productname="Shelly(Plus) 1PM",connection="Shelly(Plus) 1PM HTTP JSON service",):
         config = self._getConfig()
         deviceinstance = int(config["DEFAULT"]["Deviceinstance"])
         customname = config["DEFAULT"]["CustomName"]
 
-        self._dbusservice = VeDbusService(
-            "{}.http_{:02d}".format(servicename, deviceinstance)
-        )
+        self._dbusservice = VeDbusService("{}.http_{:02d}".format(servicename, deviceinstance))
         self._paths = paths
 
         logging.debug("%s /DeviceInstance = %d" % (servicename, deviceinstance))
@@ -82,12 +68,17 @@ class DbusShelly1pmService:
 
     def _getShellySerial(self):
         config = self._getConfig()
-        meter_data = self._getShellyData()
+        try:
+            meter_data = self._getShellyData()
+        except:
+            meter_data = None
 
-        if not meter_data["sys"]["mac"]:
-            raise ValueError("Response does not contain 'sys' 'mac' attribute")
-
-        serial = meter_data["sys"]["mac"]
+        if meter_data == None:
+            serial = "Unknown"
+        else:
+            if not meter_data["sys"]["mac"]:
+                raise ValueError("Response does not contain 'sys' 'mac' attribute")
+            serial = meter_data["sys"]["mac"]
 
     def _getConfig(self):
         config = configparser.ConfigParser()
@@ -117,12 +108,7 @@ class DbusShelly1pmService:
 
         URL = self._getShellyStatusUrl()
         if config["SHELLY"]["Username"] != "" and config["SHELLY"]["Password"] != "":
-            meter_r = requests.get(
-                url=URL,
-                auth=HTTPDigestAuth(
-                    config["SHELLY"]["Username"], config["SHELLY"]["Password"]
-                ),
-            )
+            meter_r = requests.get(url=URL,auth=HTTPDigestAuth(config["SHELLY"]["Username"], config["SHELLY"]["Password"]),)
         else:
             meter_r = requests.get(url=URL)
 
@@ -214,13 +200,7 @@ def main():
         format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         level=getLogLevel(),
-        handlers=[
-            logging.FileHandler(
-                "%s/current.log" % (os.path.dirname(os.path.realpath(__file__)))
-            ),
-            logging.StreamHandler(),
-        ],
-    )
+        handlers=[logging.FileHandler("%s/current.log" % (os.path.dirname(os.path.realpath(__file__)))),logging.StreamHandler(),],)
 
     try:
         logging.info("Start")
@@ -240,10 +220,7 @@ def main():
         pvac_output = DbusShelly1pmService(
             servicename="com.victronenergy.grid",
             paths={
-                "/Ac/Energy/Forward": {
-                    "initial": None,
-                    "textformat": _kwh,
-                },  # energy produced by pv inverter
+                "/Ac/Energy/Forward": {"initial": None,"textformat": _kwh,},  # energy from shore power
                 "/Ac/Power": {"initial": 0, "textformat": _w},
                 "/Ac/L1/Current": {"initial": 0, "textformat": _a},
                 "/Ac/L1/Energy/Forward": {"initial": None, "textformat": _kwh},
@@ -252,9 +229,7 @@ def main():
             },
         )
 
-        logging.info(
-            "Connected to dbus, and switching over to gobject.MainLoop() (= event based)"
-        )
+        logging.info("Connected to dbus, and switching over to gobject.MainLoop() (= event based)")
         mainloop = gobject.MainLoop()
         mainloop.run()
     except Exception as e:
