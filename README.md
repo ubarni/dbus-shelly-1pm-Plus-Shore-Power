@@ -51,7 +51,7 @@ rm main.zip
 ⚠️ Check configuration after that - because service is already installed an running and with wrong connection data (host, username, pwd) you will spam the log-file
 
 ### Change config.ini
-Within the project there is a file `/data/dbus-shelly-1pm-pvinverter01/config.ini` or `/data/dbus-shelly-1pm-pvinverter02/config.ini` or `/data/dbus-shelly-1pm-pvinverter03/config.ini` - just change the values - most important is the deviceinstance, custom name and phase under "DEFAULT" and host, username and password in section "ONPREMISE". More details below:
+Within the project there is a file `/data/dbus-shelly-plus-1pm-shore-power/config.ini` - just change the values - most important is the deviceinstance, custom name and host, username and password in section "SHELLY". More details below:
 
 
 | Section  | Config vlaue | Explanation |
