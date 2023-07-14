@@ -41,11 +41,11 @@ After that call the install.sh script.
 
 The following script should do everything for you:
 ```
-wget https://github.com/ubarni/dbus-shelly-plus-1pm-shore-power/archive/refs/heads/main.zip
-unzip main.zip "dbus-shelly-plus-1pm-shore-power-main/*" -d /data
-mv /data/dbus-shelly-plus-1pm-shore-power-main /data/dbus-shelly-plus-1pm-shore-power
-chmod a+x /data/dbus-shelly-plus-1pm-shore-power/install.sh
-/data/dbus-shelly-plus-1pm-shore-power/install.sh
+wget https://github.com/ubarni/dbus-shelly-1pm-plus-shore-power/archive/refs/heads/main.zip
+unzip main.zip "dbus-shelly-1pm-plus-shore-power-main/*" -d /data
+mv /data/dbus-shelly-1pm-plus-shore-power-main /data/dbus-shelly-1pm-plus-shore-power
+chmod a+x /data/dbus-shelly-1pm-plus-shore-power/install.sh
+/data/dbus-shelly-1pm-plus-shore-power/install.sh
 rm main.zip
 ```
 ⚠️ Check configuration after that - because service is already installed an running and with wrong connection data (host, username, pwd) you will spam the log-file
