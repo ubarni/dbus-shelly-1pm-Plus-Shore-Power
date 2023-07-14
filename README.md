@@ -42,7 +42,7 @@ After that call the install.sh script.
 The following script should do everything for you:
 ```
 wget https://github.com/Halmand/dbus-shelly-plus-1pm-shore-power/archive/refs/heads/main.zip
-unzip main.zip "dbus-shelly-plus-1pm-shore-power/*" -d /data
+unzip main.zip "dbus-shelly-plus-1pm-shore-power-main/*" -d /data
 mv /data/dbus-shelly-plus-1pm-shore-power-main /data/dbus-shelly-plus-1pm-shore-power
 chmod a+x /data/dbus-shelly-plus-1pm-shore-power/install.sh
 /data/dbus-shelly-plus-1pm-shore-power/install.sh
