@@ -152,10 +152,10 @@ class DbusShelly1pmService:
          
            
        # increment UpdateIndex - to show that new data is available
-       index = self._dbusservice['/UpdateIndex'] + 1  # increment index
-       if index > 255:   # maximum value of the index
-         index = 0       # overflow from 255 to 0
-       self._dbusservice['/UpdateIndex'] = index
+#       index = self._dbusservice['/UpdateIndex'] + 1  # increment index
+#       if index > 255:   # maximum value of the index
+#         index = 0       # overflow from 255 to 0
+#       self._dbusservice['/UpdateIndex'] = index
 
        #update lastupdate vars
        self._lastUpdate = time.time()              
