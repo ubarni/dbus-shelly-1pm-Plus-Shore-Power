@@ -159,6 +159,9 @@ class DbusShelly1pmService:
                 self._dbusservice["/Ac/L1/Power"] = power
                 self._dbusservice["/Ac/L1/Voltage"] = voltage
             else:
+                self._dbusservice["/Ac/Energy/Forward"] = 0
+                self._dbusservice["/Ac/Power"] = 0
+
                 self._dbusservice["/Ac/L1/Current"] = 0
                 self._dbusservice["/Ac/L1/Energy/Forward"] = 0
                 self._dbusservice["/Ac/L1/Power"] = 0
