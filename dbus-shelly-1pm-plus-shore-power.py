@@ -74,7 +74,7 @@ class DbusShelly1pmService:
             meter_data = None
 
         if meter_data == None:
-            serial = "Unknown"
+            serial = "Offline"
         else:
             if not meter_data["sys"]["mac"]:
                 raise ValueError("Response does not contain 'sys' 'mac' attribute")
