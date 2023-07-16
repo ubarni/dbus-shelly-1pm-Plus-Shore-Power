@@ -29,7 +29,7 @@ So what is the script doing:
 Thats it 😄
 
 ### Pictures
-#![VRM Overview](img/shore-sower-vrm.png) 
+#![VRM Overview](img/shore-power-vrm.png) 
 #![Flowmeter](img/shore-power-flow.png) 
 #![ShorePower - Device List](img/shore-power-device-list.png)
 #![ShorePower - Device](img/shore-power-device.png)
