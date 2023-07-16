@@ -5,7 +5,8 @@ PM1 PLUS = https://youtu.be/4lI5X2ZwxUE
 
 ## Purpose
 With the scripts in this repo it should be easy possible to install, uninstall, restart a service that connects the Shelly Plus 1PM to the VenusOS and GX devices from Victron. Idea is inspired on @Halmand project linked below.
-I will use the Shelly to meter shore power for my Camper Van. So a view changes are made.
+I will use the Shelly to meter shore power for my Camper Van.
+
 I changed the original project to grid power instead of pvinverter and reduced to one (L1) phase. Also when the shore power is disconnected the Shelly will not response. In this case ZERO values ar returned and the serial number is set to "Offline"
 
 ## Inspiration
