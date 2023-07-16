@@ -29,11 +29,11 @@ So what is the script doing:
 Thats it 😄
 
 ### Pictures
-#![Tile Overview](img/Shore-Power-VRM.png) 
-#![Flowmeter](img/Shore-Power-Flow.png) 
-#![SmartMeter - Values](img/venus-os-shelly1pm-pvinverter.PNG)
-#![SmartMeter - Device Details](img/venus-os-shelly1pm-pvinverter-devicedetails.PNG)
-
+#![VRM Overview](img/shore-sower-vrm.png) 
+#![Flowmeter](img/shore-power-flow.png) 
+#![ShorePower - Device List](img/shore-power-device-list.png)
+#![ShorePower - Device](img/shore-power-device.png)
+#![ShorePower - Device Values](img/shore-power-values.png)
 
 ## Install & Configuration
 ### Get the code
