@@ -107,13 +107,13 @@ class DbusShelly1pmService:
 
     def _getShellyData(self):
         config = self._getConfig()
+        timeout = config.getfloat('SHELLY', 'timeout')
 
         URL = self._getShellyStatusUrl()
         if config["SHELLY"]["Username"] != "" and config["SHELLY"]["Password"] != "":
-            meter_r = requests.get(url=URL,auth=HTTPDigestAuth(config["SHELLY"]["Username"], config["SHELLY"]["Password"]), timeout=config["DEFAULT"]["ConnectionTimeout"])
+            meter_r = requests.get(url=URL,auth=HTTPDigestAuth(config["SHELLY"]["Username"], config["SHELLY"]["Password"]), timeout=timeout)
         else:
-#            meter_r = requests.get(url=URL, timeout=config["DEFAULT"]["ConnectionTimeout"])
-            meter_r = requests.get(url=URL)
+            meter_r = requests.get(url=URL, timeout=timeout)
 
         # check for response
         if not meter_r:
