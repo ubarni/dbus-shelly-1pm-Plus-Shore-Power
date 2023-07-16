@@ -110,9 +110,9 @@ class DbusShelly1pmService:
 
         URL = self._getShellyStatusUrl()
         if config["SHELLY"]["Username"] != "" and config["SHELLY"]["Password"] != "":
-            meter_r = requests.get(url=URL,auth=HTTPDigestAuth(config["SHELLY"]["Username"], config["SHELLY"]["Password"]),)
+            meter_r = requests.get(url=URL,auth=HTTPDigestAuth(config["SHELLY"]["Username"], config["SHELLY"]["Password"]),, timeout=5)
         else:
-            meter_r = requests.get(url=URL)
+            meter_r = requests.get(url=URL, timeout=5)
 
         # check for response
         if not meter_r:
@@ -144,7 +144,9 @@ class DbusShelly1pmService:
             # send data to DBus
             if meter_data == None:
                 power = 0
+                logging.info("Shelly Offline")
             else:
+                logging.debug("Shelly data: %s", meter_data)
                 power = meter_data["switch:0"]["apower"]
                 total = meter_data["switch:0"]["aenergy"]["total"]
                 voltage = meter_data["switch:0"]["voltage"]
