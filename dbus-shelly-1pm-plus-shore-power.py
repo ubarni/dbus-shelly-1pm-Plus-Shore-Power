@@ -112,7 +112,8 @@ class DbusShelly1pmService:
         if config["SHELLY"]["Username"] != "" and config["SHELLY"]["Password"] != "":
             meter_r = requests.get(url=URL,auth=HTTPDigestAuth(config["SHELLY"]["Username"], config["SHELLY"]["Password"]), timeout=config["DEFAULT"]["ConnectionTimeout"])
         else:
-            meter_r = requests.get(url=URL, timeout=config["DEFAULT"]["ConnectionTimeout"])
+#            meter_r = requests.get(url=URL, timeout=config["DEFAULT"]["ConnectionTimeout"])
+            meter_r = requests.get(url=URL)
 
         # check for response
         if not meter_r:
