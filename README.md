@@ -7,34 +7,39 @@ PM1 PLUS = https://youtu.be/4lI5X2ZwxUE
 With the scripts in this repo it should be easy possible to install, uninstall, restart a service that connects the Shelly Plus 1PM to the VenusOS and GX devices from Victron. Idea is inspired on @Halmand project linked below.
 I will use the Shelly to meter shore power for my Camper Van.
 
-I changed the original project to grid power instead of pvinverter and reduced to one (L1) phase. Also when the shore power is disconnected the Shelly will not response. In this case ZERO values ar returned and the serial number is set to "Offline"
+I changed the original project to grid power instead of pvinverter and reduced to one (L1) phase. Also when the shore power is disconnected the Shelly will not response. In this case ZERO values are returned and the serial number is set to "Offline"
 
 ## Inspiration
 This project is a fork of https://github.com/Halmand/dbus-shelly-1pm-and-pm1-Plus-pvinverter-multi-instance to use the Shelly Plus 1PM to meter the shore power of my camper van.
 
-- https://github.com/fabian-lauer/dbus-shelly-3em-smartmeter
 - https://shelly-api-docs.shelly.cloud/gen1/#shelly1-shelly1pm
-- https://github.com/victronenergy/venus/wiki/dbus#pv-inverters
-- https://github.com/Halmand/dbus-shelly-1pm-and-pm1-Plus-pvinverter-multi-instance
+- https://github.com/victronenergy/venus/wiki/dbus#grid-and-genset-meter
 
 ### Details / Process
 So what is the script doing:
 - Running as a service
 - connecting to DBus of the Venus OS `com.victronenergy.pvinverter.http_{DeviceInstanceID_from_config}`
-- After successful DBus connection Shelly Plus 1PM is accessed via REST-API - simply the /status is called and a JSON is returned with all details
+- After successful DBus connection Shelly Plus 1PM is accessed via REST-API
+  the /status is requetsed and a JSON is returned with all details
   A sample JSON file from Shelly 1PM can be found [here](docs/shelly1pm-plus-status-sample.json)
 - Serial/MAC is taken from the response as device serial
+- In case the request is timed out (shore power is not attached) all values are set to 0 (ZERO) and the serial number is set to "Offline"
 - Paths are added to the DBus with default value 0 - including some settings like name, etc
-- After that a "loop" is started which pulls Shelly 1PM data every 750ms from the REST-API and updates the values in the DBus
+- After that a "loop" is started which pulls Shelly 1PM data every 5sec from the REST-API and updates the values in the DBus
 
 Thats it 😄
 
 ### Pictures
-#![VRM Overview](img/shore-power-vrm.png) 
-#![Flowmeter](img/shore-power-flow.png) 
-#![ShorePower - Device List](img/shore-power-device-list.png)
-#![ShorePower - Device](img/shore-power-device.png)
-#![ShorePower - Device Values](img/shore-power-values.png)
+#### Overview in VRM Portal
+![VRM Overview](img/shore-power-vrm.png) 
+#### Flowmeter on Cerbos GX
+![Flowmeter](img/shore-power-flow.png)
+#### Cerbos GX Device List
+![ShorePower - Device List](img/shore-power-device-list.png)
+#### Shore power device
+![ShorePower - Device](img/shore-power-device.png)
+#### Shore power values
+![ShorePower - Device Values](img/shore-power-values.png)
 
 ## Install & Configuration
 ### Get the code
