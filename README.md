@@ -29,8 +29,8 @@ So what is the script doing:
 Thats it 😄
 
 ### Pictures
-#![Tile Overview](img/venus-os-tile-overview.PNG)
-#![Remote Console - Overview](img/venus-os-remote-console-overview.PNG) 
+#![Tile Overview](img/Shore Power VRM.png) 
+#![Flowmeter](img/Shore Power Flow.png) 
 #![SmartMeter - Values](img/venus-os-shelly1pm-pvinverter.PNG)
 #![SmartMeter - Device Details](img/venus-os-shelly1pm-pvinverter-devicedetails.PNG)
 
