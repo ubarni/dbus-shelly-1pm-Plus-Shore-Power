@@ -1,0 +1,273 @@
+# Home Assistant sensors to show VRM data
+# ##SITE_ID## and ##TOKEN## must be set for your installation
+# also the most item["instance"] == XX maybe different in your setup and must be changed
+# Here you can get yor ##TOKEN## and check your VRM data
+# https://vrm-api-docs.victronenergy.com/#/operations/auth/login
+# https://vrm-api-docs.victronenergy.com/#/operations/users/idUser/accesstokens/create
+# https://vrm-api-docs.victronenergy.com/#/operations/installations/idSite/diagnostics
+
+# Victron call for current installation data
+- platform: rest
+  name: vrm data
+  json_attributes:
+   - success
+   - records
+   - num_records
+  resource: https://vrmapi.victronenergy.com/v2/installations/##SITE_ID##/diagnostics?count=1000
+  headers:
+    X-Authorization: Token ##TOKEN##
+  value_template: '{{ value_json.records[0].timestamp }}'
+
+- platform: template
+  sensors:
+    vrm_grid_volt:
+      friendly_name: 'VRM Grid V'
+      unique_id: vrm_grid_volt
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "g1v" and item["instance"] == 44 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: 'V'
+      device_class: voltage
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_grid_ampere:
+      friendly_name: 'VRM Grid A'
+      unique_id: vrm_grid_ampere
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "g1c" and item["instance"] == 44 %}{{ item["formattedValue"][:-2] | float() | round(2) }}{% endfor %}'
+      unit_of_measurement: 'A'
+      device_class: current
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_grid_power:
+      friendly_name: 'VRM Grid W'
+      unique_id: vrm_grid_power
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "g1p" and item["instance"] == 44 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: 'W'
+      device_class: power
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_grid_energy:
+      friendly_name: 'VRM Grid Energy'
+      unique_id: vrm_grid_energy
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "g1f" and item["instance"] == 44 %}{{ item["formattedValue"][:-4] | float() | round(2) }}{% endfor %}'
+      unit_of_measurement: 'kWh'
+      device_class: energy
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_battery_soc:
+      friendly_name: 'VRM Battery SoC'
+      unique_id: vrm_battery_soc
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "SOC" and item["instance"] == 279 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: '%'
+      device_class: battery
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_battery_ah:
+      friendly_name: 'VRM Battery Ah'
+      unique_id: vrm_battery_ah
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "CE" and item["instance"] == 279 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: 'Ah'
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_battery_volt:
+      friendly_name: 'VRM Battery V'
+      unique_id: vrm_battery_volt
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "V" and item["instance"] == 279 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: 'V'
+      device_class: voltage
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_battery_volt_starter:
+      friendly_name: 'VRM Starter Battery V'
+      unique_id: vrm_battery_volt_starter
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "VS" and item["instance"] == 279 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: 'V'
+      device_class: voltage
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_battery_ampere:
+      friendly_name: 'VRM Battery A'
+      unique_id: vrm_battery_ampere
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "I" and item["instance"] == 279 %}{{ item["formattedValue"][:-2] | float() | round(2) }}{% endfor %}'
+      unit_of_measurement: 'A'
+      device_class: current
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_system_power:
+      friendly_name: 'VRM System W'
+      unique_id: vrm_system_power
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "dc" and item["instance"] == 0 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: 'W'
+      device_class: power
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_system_battery_power:
+      friendly_name: 'VRM System Battery W'
+      unique_id: vrm_system_battery_power
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "bp" and item["instance"] == 0 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: 'W'
+      device_class: power
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_system_ampere:
+      friendly_name: 'VRM System A'
+      unique_id: vrm_system_ampere
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "I" and item["instance"] == 0 %}{{ item["formattedValue"][:-2] | float() | round(2) }}{% endfor %}'
+      unit_of_measurement: 'A'
+      device_class: current
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_latitude:
+      friendly_name: 'VRM Latitude'
+      unique_id: vrm_latitude
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "lt" and item["instance"] == 0 %}{{ item["rawValue"] | float() | round(5) }}{% endfor %}'
+      unit_of_measurement: 'Degrees'
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_longitude:
+      friendly_name: 'VRM Longitude'
+      unique_id: vrm_longitude
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "lg" and item["instance"] == 0 %}{{ item["rawValue"] | float() | round(5) }}{% endfor %}'
+      unit_of_measurement: 'Degrees'
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_altitude:
+      friendly_name: 'VRM Altitude'
+      unique_id: vrm_altitude
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "la" and item["instance"] == 0 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: 'm'
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_speed:
+      friendly_name: 'VRM Speed'
+      unique_id: vrm_speed
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "ls" and item["instance"] == 0 %}{{ item["formattedValue"][:-3] | float() | round(2) }}{% endfor %}'
+      unit_of_measurement: 'm/s'
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_course:
+      friendly_name: 'VRM Course'
+      unique_id: vrm_course
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "lc" and item["instance"] == 0 %}{{ item["rawValue"] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: '°'
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_solar_battery_watts:
+      friendly_name: 'VRM Solar Battery Watts'
+      unique_id: vrm_solar_battery_watts
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "ScW" and item["instance"] == 278 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: 'W'
+      device_class: power
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_solar_battery_ampere:
+      friendly_name: 'VRM Solar Battery Ampere'
+      unique_id: vrm_solar_battery_ampere
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "ScI" and item["instance"] == 278 %}{{ item["rawValue"] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: 'A'
+      device_class: current
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_solar_energy_today:
+      friendly_name: 'VRM Solar Energy today'
+      unique_id: vrm_solar_energy_today
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "YT" and item["instance"] == 278 %}{{ item["rawValue"] | float() | round(2) }}{% endfor %}'
+      unit_of_measurement: 'kWh'
+      device_class: energy
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_solar_max_charge_power_today:
+      friendly_name: 'VRM Solar max Charge Power today'
+      unique_id: vrm_solar_max_charge_power_today
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "MCPT" and item["instance"] == 278 %}{{ item["rawValue"] | float() | round(0) }}{% endfor %}'
+      unit_of_measurement: 'W'
+      device_class: power
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_inside_temp:
+      friendly_name: 'VRM Inside temperature'
+      unique_id: vrm_inside_temp
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "tsT" and item["instance"] == 25 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: '°C'
+      device_class: temperature
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_cerbo_temp:
+      friendly_name: 'VRM Cerbo temperature'
+      unique_id: vrm_cerbo_temp
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "tsT" and item["instance"] == 26 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: '°C'
+      device_class: temperature
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_fridge_temp:
+      friendly_name: 'VRM Fridge temperature'
+      unique_id: vrm_fridge_temp
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "tsT" and item["instance"] == 30 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: '°C'
+      device_class: temperature
+  scan_interval: 60
+  
+- platform: template
+  sensors:
+    vrm_battery_temp:
+      friendly_name: 'VRM Battery temperature'
+      unique_id: vrm_battery_temp
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "tsT" and item["instance"] == 24 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: '°C'
+      device_class: temperature
+  scan_interval: 60
+
+- platform: template
+  sensors:
+    vrm_outside_temp:
+      friendly_name: 'VRM Outside temperature'
+      unique_id: vrm_outside_temp
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "tsT" and item["instance"] == 29 %}{{ item["formattedValue"][:-2] | float() | round(1) }}{% endfor %}'
+      unit_of_measurement: '°C'
+      device_class: temperature
+  scan_interval: 60
