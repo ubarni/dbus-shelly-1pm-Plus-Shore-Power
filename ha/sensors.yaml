@@ -20,6 +20,15 @@
 
 - platform: template
   sensors:
+    vrm_last_update:
+      friendly_name: 'VRM Last Update'
+      unique_id: vrm_last_update
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "ss" and item["instance"] == 0 %}{{ item["timestamp"]  | timestamp_local }}{% endfor %}'
+      device_class: timestamp
+  scan_interval: 60
+
+- platform: template
+  sensors:
     vrm_grid_volt:
       friendly_name: 'VRM Grid V'
       unique_id: vrm_grid_volt
@@ -112,7 +121,7 @@
     vrm_system_power:
       friendly_name: 'VRM System W'
       unique_id: vrm_system_power
-      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "dc" and item["instance"] == 0 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "dc" and item["instance"] == 0 %}{{ item["rawValue"] | float() | round(2) }}{% endfor %}'
       unit_of_measurement: 'W'
       device_class: power
   scan_interval: 60
@@ -122,7 +131,7 @@
     vrm_system_battery_power:
       friendly_name: 'VRM System Battery W'
       unique_id: vrm_system_battery_power
-      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "bp" and item["instance"] == 0 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "bp" and item["instance"] == 0 %}{{ item["rawValue"] | float() | round(2) }}{% endfor %}'
       unit_of_measurement: 'W'
       device_class: power
   scan_interval: 60
@@ -187,7 +196,7 @@
     vrm_solar_battery_watts:
       friendly_name: 'VRM Solar Battery Watts'
       unique_id: vrm_solar_battery_watts
-      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "ScW" and item["instance"] == 278 %}{{ item["formattedValue"][:-2] | float() | round(0) }}{% endfor %}'
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "ScW" and item["instance"] == 278 %}{{ item["rawValue"] | float() | round(2) }}{% endfor %}'
       unit_of_measurement: 'W'
       device_class: power
   scan_interval: 60
@@ -217,7 +226,7 @@
     vrm_solar_max_charge_power_today:
       friendly_name: 'VRM Solar max Charge Power today'
       unique_id: vrm_solar_max_charge_power_today
-      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "MCPT" and item["instance"] == 278 %}{{ item["rawValue"] | float() | round(0) }}{% endfor %}'
+      value_template: '{% for item in states.sensor.vrm_data.attributes.records if item["code"] == "MCPT" and item["instance"] == 278 %}{{ item["rawValue"] | float() | round(2) }}{% endfor %}'
       unit_of_measurement: 'W'
       device_class: power
   scan_interval: 60
