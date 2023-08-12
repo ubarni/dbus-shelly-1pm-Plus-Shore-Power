@@ -67,7 +67,6 @@ class DbusShelly1pmService:
         gobject.timeout_add(self._getSignOfLifeInterval() * 60 * 1000, self._signOfLife)
 
     def _getShellySerial(self):
-        serial = "Offline"
         try:
             meter_data = self._getShellyData()
         except:
@@ -76,10 +75,7 @@ class DbusShelly1pmService:
         if meter_data == None:
             serial = "Offline"
         else:
-            if not meter_data["sys"]["mac"]:
-                raise ValueError("Response does not contain 'sys' 'mac' attribute")
-            else
-                serial = meter_data["sys"]["mac"]
+            serial = meter_data["sys"]["mac"]
                 
         return serial
 
@@ -153,10 +149,10 @@ class DbusShelly1pmService:
                 total = meter_data["switch:0"]["aenergy"]["total"]
                 voltage = meter_data["switch:0"]["voltage"]
                 current = power / voltage
-#                serial = meter_data["sys"]["mac"]
+                serial = meter_data["sys"]["mac"]
 
             if power > 0:
-#                self._dbusservice["/Serial"] = serial
+                self._dbusservice["/Serial"] = serial
                 self._dbusservice["/Ac/Energy/Forward"] = total / 1000
                 self._dbusservice["/Ac/Power"] = power
 
@@ -165,7 +161,7 @@ class DbusShelly1pmService:
                 self._dbusservice["/Ac/L1/Power"] = power
                 self._dbusservice["/Ac/L1/Voltage"] = voltage
             else:
-#                self._dbusservice["/Serial"] = "Offline"
+                self._dbusservice["/Serial"] = "Offline"
                 self._dbusservice["/Ac/Energy/Forward"] = 0
                 self._dbusservice["/Ac/Power"] = 0
 
