@@ -67,7 +67,7 @@ class DbusShelly1pmService:
         gobject.timeout_add(self._getSignOfLifeInterval() * 60 * 1000, self._signOfLife)
 
     def _getShellySerial(self):
-        config = self._getConfig()
+#        config = self._getConfig()
         try:
             meter_data = self._getShellyData()
         except:
