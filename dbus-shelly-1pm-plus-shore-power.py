@@ -78,6 +78,8 @@ class DbusShelly1pmService:
         else:
             if not meter_data["sys"]["mac"]:
                 raise ValueError("Response does not contain 'sys' 'mac' attribute")
+            
+            serial = meter_data['sys']['mac']
                 
         return serial
 
