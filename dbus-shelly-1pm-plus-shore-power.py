@@ -67,17 +67,11 @@ class DbusShelly1pmService:
         gobject.timeout_add(self._getSignOfLifeInterval() * 60 * 1000, self._signOfLife)
 
     def _getShellySerial(self):
-#        config = self._getConfig()
-        try:
-            meter_data = self._getShellyData()
-        except:
-            meter_data = None
-
-        if meter_data == None:
-            serial = "Offline"
-        else:
-            if not meter_data["sys"]["mac"]:
-                raise ValueError("Response does not contain 'sys' 'mac' attribute")
+        serial = "Offline"
+        meter_data = self._getShellyData()
+        
+        if not meter_data["sys"]["mac"]:
+            raise ValueError("Response does not contain 'sys' 'mac' attribute")
             serial = meter_data["sys"]["mac"]
             
         return serial
