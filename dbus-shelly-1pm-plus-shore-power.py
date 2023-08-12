@@ -79,7 +79,7 @@ class DbusShelly1pmService:
             if not meter_data["sys"]["mac"]:
                 raise ValueError("Response does not contain 'sys' 'mac' attribute")
             
-        serial = meter_data['sys']['mac']
+        serial = meter_data["sys"]["mac"]
                 
         return serial
 
@@ -153,7 +153,7 @@ class DbusShelly1pmService:
                 total = meter_data["switch:0"]["aenergy"]["total"]
                 voltage = meter_data["switch:0"]["voltage"]
                 current = power / voltage
-                serial = meter_data['sys']['mac']
+                serial = meter_data["sys"]["mac"]
 
             if power > 0:
                 self._dbusservice["/Serial"] = serial
@@ -232,7 +232,7 @@ def main():
         pvac_output = DbusShelly1pmService(
             servicename="com.victronenergy.grid",
             paths={
-                "/Ac/Energy/Forward": {"initial": None,"textformat": _kwh,},  # energy from shore power
+                "/Ac/Energy/Forward": {"initial": None,"textformat": _kwh,},
                 "/Ac/Power": {"initial": 0, "textformat": _w},
                 "/Ac/L1/Current": {"initial": 0, "textformat": _a},
                 "/Ac/L1/Energy/Forward": {"initial": None, "textformat": _kwh},
