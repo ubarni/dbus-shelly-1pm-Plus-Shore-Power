@@ -68,12 +68,17 @@ class DbusShelly1pmService:
 
     def _getShellySerial(self):
         serial = "Offline"
-        meter_data = self._getShellyData()
-        
-        if not meter_data["sys"]["mac"]:
-            raise ValueError("Response does not contain 'sys' 'mac' attribute")
-            serial = meter_data["sys"]["mac"]
-            
+        try:
+            meter_data = self._getShellyData()
+        except:
+            meter_data = None
+
+        if meter_data == None:
+            serial = "Offline"
+        else:
+            if not meter_data["sys"]["mac"]:
+                raise ValueError("Response does not contain 'sys' 'mac' attribute")
+                
         return serial
 
     def _getConfig(self):
