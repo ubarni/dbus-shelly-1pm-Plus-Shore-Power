@@ -52,20 +52,6 @@ class DbusShelly1pmService:
         self._dbusservice.add_path("/Mgmt/Connection", connection)
 
         # Create the mandatory objects
-        self._dbusservice.add_path('/DeviceInstance', deviceinstance)
-        self._dbusservice.add_path('/ProductId', productid)
-        self._dbusservice.add_path('/DeviceType', 345) # found on https://www.sascha-curth.de/projekte/005_Color_Control_GX.html#experiment - should be an ET340 Engerie Meter
-        self._dbusservice.add_path('/ProductName', productname)
-        self._dbusservice.add_path('/CustomName', customname)
-        self._dbusservice.add_path('/Latency', None)
-        self._dbusservice.add_path('/FirmwareVersion', 0.3)
-        self._dbusservice.add_path('/HardwareVersion', 0)
-        self._dbusservice.add_path('/Connected', 1)
-        self._dbusservice.add_path('/Role', role)
-        self._dbusservice.add_path('/Position', self._getShellyPosition()) # normaly only needed for pvinverter
-        self._dbusservice.add_path('/Serial', self._getShellySerial())
-        self._dbusservice.add_path('/UpdateIndex', 0)
-
         self._dbusservice.add_path("/DeviceInstance", deviceinstance)
         self._dbusservice.add_path('/ProductId', productid)
         self._dbusservice.add_path('/DeviceType', 345) # found on https://www.sascha-curth.de/projekte/005_Color_Control_GX.html#experiment - should be an ET340 Engerie Meter
