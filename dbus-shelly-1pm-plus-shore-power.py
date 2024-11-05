@@ -28,34 +28,62 @@ class DbusShelly1pmService:
         deviceinstance = int(config["DEFAULT"]["Deviceinstance"])
         customname = config["DEFAULT"]["CustomName"]
 
+        role = config['DEFAULT']['Role']
+        allowed_roles = ['pvinverter','grid']
+        if role in allowed_roles:
+            servicename = 'com.victronenergy.' + role
+        else:
+            logging.error("Configured Role: %s is not in the allowed list")
+            exit()
+    
+        if role == 'pvinverter':
+            productid = 0xA144
+        else:
+            productid = 45069
+    
         self._dbusservice = VeDbusService("{}.http_{:02d}".format(servicename, deviceinstance))
         self._paths = paths
 
         logging.debug("%s /DeviceInstance = %d" % (servicename, deviceinstance))
 
-        # Create the generic path objects, as specified in the dbus-api document
-        self._dbusservice.add_path("/ProductName", productname)
-        self._dbusservice.add_path("/CustomName", customname)
-        self._dbusservice.add_path("/Mgmt/Connection", connection)
+        # Create the management objects, as specified in the ccgx dbus-api document
         self._dbusservice.add_path("/Mgmt/ProcessName", __file__)
         self._dbusservice.add_path("/Mgmt/ProcessVersion","Unkown version, and running on Python " + platform.python_version(),)
-        self._dbusservice.add_path("/Connected", 1)
+        self._dbusservice.add_path("/Mgmt/Connection", connection)
+
+        # Create the mandatory objects
+        self._dbusservice.add_path('/DeviceInstance', deviceinstance)
+        self._dbusservice.add_path('/ProductId', productid)
+        self._dbusservice.add_path('/DeviceType', 345) # found on https://www.sascha-curth.de/projekte/005_Color_Control_GX.html#experiment - should be an ET340 Engerie Meter
+        self._dbusservice.add_path('/ProductName', productname)
+        self._dbusservice.add_path('/CustomName', customname)
+        self._dbusservice.add_path('/Latency', None)
+        self._dbusservice.add_path('/FirmwareVersion', 0.3)
+        self._dbusservice.add_path('/HardwareVersion', 0)
+        self._dbusservice.add_path('/Connected', 1)
+        self._dbusservice.add_path('/Role', role)
+        self._dbusservice.add_path('/Position', self._getShellyPosition()) # normaly only needed for pvinverter
+        self._dbusservice.add_path('/Serial', self._getShellySerial())
+        self._dbusservice.add_path('/UpdateIndex', 0)
+
         self._dbusservice.add_path("/DeviceInstance", deviceinstance)
-        self._dbusservice.add_path("/ProductId", 0xFFFF)  # id assigned by Victron Support from SDM630v2.py
-        self._dbusservice.add_path("/Serial", self._getShellySerial())
+        self._dbusservice.add_path('/ProductId', productid)
+        self._dbusservice.add_path('/DeviceType', 345) # found on https://www.sascha-curth.de/projekte/005_Color_Control_GX.html#experiment - should be an ET340 Engerie Meter
+        self._dbusservice.add_path("/ProductName", productname)
+        self._dbusservice.add_path("/CustomName", customname)
+        self._dbusservice.add_path('/Latency', None)
+        self._dbusservice.add_path("/FirmwareVersion", 0.3)
         self._dbusservice.add_path("/HardwareVersion", 0)
-        self._dbusservice.add_path("/FirmwareVersion", 0.1)
+        self._dbusservice.add_path("/Connected", 1)
+        self._dbusservice.add_path('/Role', role)
+        self._dbusservice.add_path('/Position', self._getShellyPosition()) # normaly only needed for pvinverter
+        self._dbusservice.add_path("/Serial", self._getShellySerial())
         self._dbusservice.add_path("/UpdateIndex", 0)
 
         # add path values to dbus
         for path, settings in self._paths.items():
             self._dbusservice.add_path(
-                path,
-                settings["initial"],
-                gettextcallback=settings["textformat"],
-                writeable=True,
-                onchangecallback=self._handlechangedvalue,
-            )
+                path, settings["initial"], gettextcallback=settings["textformat"], writeable=True, onchangecallback=self._handlechangedvalue)
 
         # last update
         self._lastUpdate = 0
@@ -79,6 +107,15 @@ class DbusShelly1pmService:
                 
         return serial
 
+    def _getShellyPosition(self):
+        config = self._getConfig()
+        value = config['DEFAULT']['Position']
+        
+        if not value: 
+            value = 0
+            
+        return int(value)
+ 
     def _getConfig(self):
         config = configparser.ConfigParser()
         config.read("%s/config.ini" % (os.path.dirname(os.path.realpath(__file__))))
@@ -226,7 +263,6 @@ def main():
 
         # start our main-service
         pvac_output = DbusShelly1pmService(
-            servicename="com.victronenergy.grid",
             paths={
                 "/Ac/Energy/Forward": {"initial": None,"textformat": _kwh,},
                 "/Ac/Power": {"initial": 0, "textformat": _w},
